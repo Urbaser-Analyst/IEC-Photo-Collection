@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Urbaser Sumeet Field Activity</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f5fbfd;margin:0}
+.header{background:#0b5cab;color:#fff;padding:15px;text-align:center}
+.card{max-width:700px;margin:15px auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+select,input,textarea,button{width:100%;padding:12px;margin:8px 0}
+button{background:#14b8a6;color:#fff;border:none;font-weight:bold}
+#preview{max-width:100%;display:none;border:1px solid #ccc}
+</style>
+</head>
+<body>
+<div class="header"><h2>URBASER SUMEET</h2><div>Field Activity Reporting</div></div>
+<div class="card">
+<div id="gpsStatus">Getting GPS...</div>
+<select id="zone"><option>Select Zone</option></select>
+<select id="ward"><option>Select Ward</option></select>
+<select id="route"><option>Select Route</option></select>
+<input id="type" placeholder="Type">
+<textarea id="remarks" placeholder="Remarks"></textarea>
+<input type="file" id="camera" accept="image/*" capture="environment">
+<img id="preview">
+<button onclick="submitForm()">Submit</button>
+</div>
+
+<canvas id="canvas" style="display:none"></canvas>
+
+<script>
+const WEBAPP_URL="https://script.google.com/macros/s/AKfycbwuPBToot8XEssger232JF5tDPKSK9hP3M3ygWU9U86qkmS_XRJdPOyQU7EhiLWQxY3MQ/exec";
+let lat="",lng="",gpsAcc="",routeData=[],watermarked="";
+
+navigator.geolocation.getCurrentPosition(p=>{
+ lat=p.coords.latitude;
+ lng=p.coords.longitude;
+ gpsAcc=p.coords.accuracy;
+ document.getElementById('gpsStatus').innerHTML=`GPS OK | Accuracy ${gpsAcc.toFixed(0)}m`;
+},{enableHighAccuracy:true});
+
+fetch(WEBAPP_URL+"?action=routes").then(r=>r.json()).then(d=>{
+ routeData=d;
+ [...new Set(d.map(x=>x.Zone))].forEach(z=>zone.add(new Option(z,z)));
+});
+
+zone.onchange=()=>{
+ ward.innerHTML='<option>Select Ward</option>';
+ route.innerHTML='<option>Select Route</option>';
+ [...new Set(routeData.filter(x=>x.Zone==zone.value).map(x=>x.Ward))]
+ .forEach(w=>ward.add(new Option(w,w)));
+};
+
+ward.onchange=()=>{
+ route.innerHTML='<option>Select Route</option>';
+ routeData.filter(x=>x.Zone==zone.value && x.Ward==ward.value)
+ .forEach(r=>route.add(new Option(r.Route,r.Route)));
+};
+
+camera.onchange=e=>{
+ const file=e.target.files[0];
+ const reader=new FileReader();
+ reader.onload=ev=>createWatermark(ev.target.result);
+ reader.readAsDataURL(file);
+};
+
+function createWatermark(src){
+ const img=new Image();
+ img.onload=()=>{
+  const c=document.getElementById('canvas');
+  const ctx=c.getContext('2d');
+  c.width=img.width;
+  c.height=img.height;
+
+  ctx.drawImage(img,0,0);
+
+  const h=220;
+  ctx.fillStyle="rgba(0,0,0,0.80)";
+  ctx.fillRect(0,c.height-h,c.width,h);
+
+  ctx.fillStyle="#14b8a6";
+  ctx.font="bold 36px Arial";
+  ctx.fillText("URBASER SUMEET",20,c.height-170);
+
+  ctx.fillStyle="#fff";
+  ctx.font="28px Arial";
+  ctx.fillText("Zone: "+zone.value,20,c.height-125);
+  ctx.fillText("Ward: "+ward.value,250,c.height-125);
+  ctx.fillText("Route: "+route.value,500,c.height-125);
+
+  ctx.fillText("Type: "+type.value,20,c.height-85);
+  ctx.fillText("GPS: "+lat+", "+lng,20,c.height-45);
+  ctx.fillText(new Date().toLocaleString(),20,c.height-10);
+
+  watermarked=c.toDataURL("image/jpeg",0.85);
+  preview.src=watermarked;
+  preview.style.display='block';
+ };
+ img.src=src;
+}
+
+function submitForm(){
+ fetch(WEBAPP_URL,{
+  method:'POST',
+  body:JSON.stringify({
+   zone:zone.value,
+   ward:ward.value,
+   route:route.value,
+   type:type.value,
+   remarks:remarks.value,
+   latitude:lat,
+   longitude:lng,
+   photo:watermarked
+  })
+ }).then(()=>alert("Submitted Successfully"));
+}
+</script>
+</body>
+</html>
