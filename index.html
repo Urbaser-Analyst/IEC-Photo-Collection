@@ -3,65 +3,293 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urbaser Sumeet IEC</title>
+<title>Field Data Capture</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#f3f5f9;
+  --card:#ffffff;
+  --input:#eef2f7;
+  --border:#dbe2ec;
 
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d28;
-    --surface2: #22263a;
-    --border: #2e3348;
-    --accent: #4f8ef7;
-    --accent2: #38d9a9;
-    --danger: #ff6b6b;
-    --text: #e8ecf4;
-    --muted: #7b83a0;
-    --radius: 12px;
-    --font: 'Inter', sans-serif;
-    --mono: 'JetBrains Mono', monospace;
+  --text:#1f2937;
+  --muted:#6b7280;
+
+  --primary:#4f46e5;
+  --primary-light:#eef2ff;
+
+  --success:#10b981;
+  --danger:#ef4444;
+
+  --radius:16px;
+
+  --shadow:
+    0 2px 8px rgba(15,23,42,.04),
+    0 8px 24px rgba(15,23,42,.06);
+
+  --font:'Inter',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+
+/* HEADER */
+
+header{
+  background:var(--card);
+  border-radius:18px;
+  padding:18px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:var(--shadow);
+  margin-bottom:18px;
+}
+
+header h1{
+  font-size:24px;
+  font-weight:700;
+  margin-bottom:4px;
+  color:var(--text);
+}
+
+header p{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.pill{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:#f8fafc;
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.pill .dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--danger);
+}
+
+.pill .dot.active{
+  background:var(--success);
+}
+
+/* CARDS */
+
+.card{
+  background:var(--card);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  border:1px solid #edf0f5;
+  padding:0;
+  margin-bottom:18px;
+  overflow:hidden;
+}
+
+.card-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:18px 22px;
+  border-bottom:1px solid #edf0f5;
+  font-size:18px;
+  font-weight:700;
+  text-transform:none;
+  letter-spacing:0;
+  color:var(--text);
+}
+
+.card-body{
+  padding:20px;
+}
+
+/* GRID LAYOUTS */
+
+.details-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.area-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+@media(max-width:768px){
+  .details-grid,
+  .area-grid{
+    grid-template-columns:1fr;
   }
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* FORM */
 
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 16px;
-  }
+.field{
+  margin-bottom:0;
+}
 
-  header {
-    text-align: center;
-    padding: 24px 0 28px;
-  }
+.field label{
+  display:block;
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:8px;
+  color:#374151;
+}
 
-  header h1 {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    color: var(--text);
-  }
+.field select,
+.field input,
+.field textarea{
+  width:100%;
+  background:var(--input);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 16px;
+  font-size:15px;
+  color:var(--text);
+  outline:none;
+  transition:.2s;
+}
 
-  header p {
-    color: var(--muted);
-    font-size: 13px;
-    margin-top: 4px;
-  }
+.field textarea{
+  min-height:120px;
+}
 
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 99px;
-    padding: 4px 12px;
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 10px;
-  }
+.field select:focus,
+.field input:focus,
+.field textarea:focus{
+  border-color:var(--primary);
+  background:#fff;
+}
+
+.field select{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M3.2 5.5 8 10.3l4.8-4.8' stroke='%236b7280' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  padding-right:42px;
+}
+
+/* TIMESTAMP */
+
+#ts-display{
+  background:var(--input);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 16px;
+  font-family:var(--mono);
+  color:#4338ca;
+  font-size:14px;
+  font-weight:600;
+}
+
+/* GPS */
+
+.gps-status{
+  background:var(--input);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 16px;
+  min-height:52px;
+  display:flex;
+  align-items:center;
+}
+
+.gps-coords{
+  color:var(--success);
+  font-family:var(--mono);
+  font-size:13px;
+}
+
+/* CAMERA */
+
+.camera-area{
+  background:#17192f;
+  border:2px dashed #5d627d;
+  border-radius:14px;
+  aspect-ratio:16/9;
+  overflow:hidden;
+}
+
+/* BUTTONS */
+
+.camera-controls{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+
+.btn-cam{
+  border:none;
+  border-radius:12px;
+  padding:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.btn-start{
+  background:#e5e7eb;
+  color:#111827;
+}
+
+.btn-snap{
+  background:var(--primary);
+  color:white;
+}
+
+.btn-retake{
+  background:#f3f4f6;
+  color:#111827;
+}
+
+.btn-submit{
+  width:100%;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(135deg,#5b4cf0,#7c3aed);
+  color:#fff;
+  font-size:17px;
+  font-weight:700;
+  padding:16px;
+  margin-top:10px;
+  cursor:pointer;
+  box-shadow:
+    0 8px 20px rgba(91,76,240,.25);
+}
+
+.btn-submit:hover{
+  transform:translateY(-1px);
+}
+
+/* TOAST */
+
+#toast{
+  background:#fff;
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  border:none;
+}
 
   .pill .dot {
     width: 7px; height: 7px;
@@ -361,8 +589,8 @@
 <body>
 
 <header>
-  <h1>Urbaser Sumeet IEC Data Collection </h1>
-  <p>GPS-tagged photo submissions</p>
+  <h1>IEC D2D</h1>
+  <p>Data Collection</p>
   <div class="pill">
     <span class="dot" id="gps-dot"></span>
     <span id="gps-pill-text">Locating…</span>
@@ -433,7 +661,7 @@
     </div>
 
     <div class="field">
-      <label>Door <span class=""></span></label>
+      <label>Door_no<span class="">*</span></label>
       <input type="text" id="type-input" />
     </div>
   </div>
@@ -649,98 +877,7 @@ async function startCamera() {
   }
 }
 
-// ─── OSM Tile helpers ────────────────────────────────────
-// Convert lat/lng → OSM tile x,y at given zoom
-function latLngToTile(lat, lng, zoom) {
-  const n = Math.pow(2, zoom);
-  const x = Math.floor((lng + 180) / 360 * n);
-  const latRad = lat * Math.PI / 180;
-  const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
-  return { x, y };
-}
-
-// Pixel offset of lat/lng within the tile grid (for precise pin placement)
-function latLngToPixel(lat, lng, zoom, tileX, tileY, tileSize) {
-  const n   = Math.pow(2, zoom);
-  const px  = (lng + 180) / 360 * n * tileSize - tileX * tileSize;
-  const latR= lat * Math.PI / 180;
-  const py  = (1 - Math.log(Math.tan(latR) + 1 / Math.cos(latR)) / Math.PI) / 2 * n * tileSize - tileY * tileSize;
-  return { px, py };
-}
-
-function loadTile(url) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload  = () => resolve(img);
-    img.onerror = () => resolve(null);
-    // Try multiple OSM tile servers to avoid rate-limiting
-    img.src = url;
-  });
-}
-
-// Renders a 3×3 grid of OSM tiles centred on lat/lng into an offscreen canvas
-// Returns { canvas, pinX, pinY } — pinX/Y are pixel coords of the location within canvas
-async function loadMapImage(lat, lng) {
-  if (!lat || lat === 'N/A') return null;
-
-  const zoom     = 15;
-  const tileSize = 256;
-  const grid     = 3; // 3×3 tiles → 768×768 before crop
-  const servers  = ['a','b','c'];
-
-  const centre = latLngToTile(parseFloat(lat), parseFloat(lng), zoom);
-
-  // Load 3×3 grid of tiles around the centre tile
-  const promises = [];
-  for (let dy = -1; dy <= 1; dy++) {
-    for (let dx = -1; dx <= 1; dx++) {
-      const tx  = centre.x + dx;
-      const ty  = centre.y + dy;
-      const srv = servers[Math.abs(dx + dy * 3) % 3];
-      promises.push(loadTile(`https://${srv}.tile.openstreetmap.org/${zoom}/${tx}/${ty}.png`));
-    }
-  }
-
-  const tiles = await Promise.all(promises);
-  if (tiles.every(t => t === null)) return null;
-
-  // Stitch tiles onto offscreen canvas
-  const full = document.createElement('canvas');
-  full.width  = tileSize * grid;
-  full.height = tileSize * grid;
-  const fCtx = full.getContext('2d');
-
-  tiles.forEach((tile, i) => {
-    if (!tile) return;
-    const col = i % grid;
-    const row = Math.floor(i / grid);
-    fCtx.drawImage(tile, col * tileSize, row * tileSize, tileSize, tileSize);
-  });
-
-  // Where is the lat/lng pin within the full stitched canvas?
-  const topLeftTileX = centre.x - 1;
-  const topLeftTileY = centre.y - 1;
-  const { px, py } = latLngToPixel(
-    parseFloat(lat), parseFloat(lng), zoom,
-    topLeftTileX, topLeftTileY, tileSize
-  );
-
-  // Crop a square centred on the pin
-  const cropSize = tileSize * 2; // 512×512 crop
-  const cropX = Math.round(px - cropSize / 2);
-  const cropY = Math.round(py - cropSize / 2);
-
-  const cropped = document.createElement('canvas');
-  cropped.width  = cropSize;
-  cropped.height = cropSize;
-  cropped.getContext('2d').drawImage(full, cropX, cropY, cropSize, cropSize, 0, 0, cropSize, cropSize);
-
-  // Pin is now at centre of cropped canvas
-  return { canvas: cropped, pinX: cropSize / 2, pinY: cropSize / 2 };
-}
-
-async function snapPhoto() {
+function snapPhoto() {
   const video   = document.getElementById('video');
   const wCanvas = document.getElementById('watermark-canvas');
   const preview = document.getElementById('preview-canvas');
@@ -749,17 +886,7 @@ async function snapPhoto() {
   wCanvas.height = video.videoHeight || 960;
   const ctx = wCanvas.getContext('2d');
   ctx.drawImage(video, 0, 0, wCanvas.width, wCanvas.height);
-
-  // Stop stream early so UI feels snappy
-  if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
-
-  document.getElementById('btn-snap').disabled        = true;
-  document.getElementById('btn-snap').innerHTML       = '<span class="spinner"></span> Processing…';
-
-  // Fetch map tile (with GPS pin) from OSM
-  const mapImg = await loadMapImage(gpsData.lat, gpsData.lng);
-
-  drawWatermark(ctx, wCanvas.width, wCanvas.height, mapImg);
+  drawWatermark(ctx, wCanvas.width, wCanvas.height);
 
   preview.width  = wCanvas.width;
   preview.height = wCanvas.height;
@@ -767,13 +894,15 @@ async function snapPhoto() {
   preview.style.display = 'block';
   video.style.display   = 'none';
 
-  document.getElementById('btn-snap').innerHTML       = '⚡ Capture';
-  document.getElementById('btn-retake').style.display = 'flex';
+  if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
+
+  document.getElementById('btn-snap').disabled          = true;
+  document.getElementById('btn-retake').style.display   = 'flex';
 
   photoDataUrl = wCanvas.toDataURL('image/jpeg', 0.88);
 }
 
-function drawWatermark(ctx, w, h, mapImg) {
+function drawWatermark(ctx, w, h) {
   const now  = new Date();
   const ts   = now.toLocaleString('en-IN', {
     day: '2-digit', month: 'short', year: 'numeric',
@@ -786,7 +915,6 @@ function drawWatermark(ctx, w, h, mapImg) {
   const ward  = document.getElementById('ward-select').value;
   const route = document.getElementById('route-select').value;
 
-  // ── Right-side text watermark ──────────────────────────
   const lines = [ts, `${latStr}  ${lngStr}`.trim()];
   if (zone) lines.push(`Zone ${zone}  Ward ${ward}  Route ${route}`);
 
@@ -798,101 +926,18 @@ function drawWatermark(ctx, w, h, mapImg) {
   const blockH = lines.length * lineH + pad * 2;
   const maxW   = Math.max(...lines.map(l => ctx.measureText(l).width));
   const boxW   = maxW + pad * 2;
-  const tx = w - boxW - 10;
-  const ty = h - blockH - 10;
+  const x = w - boxW - 10;
+  const y = h - blockH - 10;
 
-  ctx.fillStyle = 'rgba(0,0,0,0.62)';
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
   ctx.beginPath();
-  ctx.roundRect(tx, ty, boxW, blockH, 6);
+  ctx.roundRect(x, y, boxW, blockH, 6);
   ctx.fill();
 
   ctx.fillStyle = '#38d9a9';
   lines.forEach((line, i) => {
-    ctx.fillText(line, tx + pad, ty + pad + fontSize + i * lineH);
+    ctx.fillText(line, x + pad, y + pad + fontSize + i * lineH);
   });
-
-  // ── Bottom-left mini-map with pin ─────────────────────
-  const mapSize   = Math.round(Math.min(w, h) * 0.24);
-  const mapMargin = 10;
-  const mx = mapMargin;
-  const my = h - mapSize - mapMargin;
-  const radius = 10;
-
-  if (mapImg && mapImg.canvas) {
-    // White border frame
-    ctx.fillStyle = 'rgba(255,255,255,0.95)';
-    ctx.beginPath();
-    ctx.roundRect(mx - 3, my - 3, mapSize + 6, mapSize + 6, radius + 2);
-    ctx.fill();
-
-    // Clip to rounded rect and draw the stitched OSM tile canvas
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(mx, my, mapSize, mapSize, radius);
-    ctx.clip();
-    ctx.drawImage(mapImg.canvas, 0, 0, mapImg.canvas.width, mapImg.canvas.height, mx, my, mapSize, mapSize);
-    ctx.restore();
-
-    // Scale pin position from tile canvas coords → drawn mapSize
-    const scaleX = mapSize / mapImg.canvas.width;
-    const scaleY = mapSize / mapImg.canvas.height;
-    const pinX   = mx + mapImg.pinX * scaleX;
-    const pinY   = my + mapImg.pinY * scaleY;
-    const pinR   = Math.max(7, mapSize * 0.075);
-
-    // Pin drop-shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.beginPath();
-    ctx.ellipse(pinX + 2, pinY + pinR * 1.9 + 2, pinR * 0.65, pinR * 0.28, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Pin teardrop body
-    ctx.fillStyle = '#e63946';
-    ctx.beginPath();
-    ctx.arc(pinX, pinY - pinR * 0.3, pinR, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(pinX - pinR * 0.55, pinY - pinR * 0.3 + pinR * 0.75);
-    ctx.lineTo(pinX + pinR * 0.55, pinY - pinR * 0.3 + pinR * 0.75);
-    ctx.lineTo(pinX, pinY + pinR * 1.6);
-    ctx.closePath();
-    ctx.fill();
-
-    // White inner dot
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc(pinX, pinY - pinR * 0.3, pinR * 0.38, 0, Math.PI * 2);
-    ctx.fill();
-
-    // OSM attribution label
-    const labelFs = Math.max(9, Math.round(mapSize * 0.08));
-    ctx.font = `500 ${labelFs}px 'Inter', sans-serif`;
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.textAlign = 'center';
-    // small dark badge
-    const lblW = ctx.measureText('© OpenStreetMap').width + 10;
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.fillRect(mx + mapSize/2 - lblW/2, my + mapSize - labelFs - 8, lblW, labelFs + 6);
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    ctx.fillText('© OpenStreetMap', mx + mapSize / 2, my + mapSize - 6);
-    ctx.textAlign = 'left';
-
-  } else if (gpsData.lat && gpsData.lat !== 'N/A') {
-    // Tiles failed — show coords-only fallback box
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.beginPath();
-    ctx.roundRect(mx, my, mapSize, mapSize, radius);
-    ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = `bold ${Math.round(mapSize * 0.16)}px 'Inter', sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('📍', mx + mapSize / 2, my + mapSize * 0.45);
-    ctx.font = `bold ${Math.round(mapSize * 0.1)}px 'JetBrains Mono', monospace`;
-    ctx.fillStyle = '#38d9a9';
-    ctx.fillText(gpsData.lat, mx + mapSize / 2, my + mapSize * 0.62);
-    ctx.fillText(gpsData.lng, mx + mapSize / 2, my + mapSize * 0.75);
-    ctx.textAlign = 'left';
-  }
 }
 
 function retakePhoto() {
@@ -922,7 +967,7 @@ async function handleSubmit(e) {
     zone:    document.getElementById('zone-select').value,
     ward:    document.getElementById('ward-select').value,
     route:   document.getElementById('route-select').value,
-    type:    document.getElementById('type-select').value,
+    Door_no:    document.getElementById('type-select').value,
     remarks: document.getElementById('remarks').value,
     photo:   photoDataUrl   // matches d.photo in your doPost
   };
@@ -932,7 +977,7 @@ async function handleSubmit(e) {
     const text = await res.text();
 
     if (text.trim() === 'OK') {
-      showToast('✓ Saved to Google Drive & Sheet!', 'success');
+      showToast('✓ Saved!', 'success');
       resetForm();
     } else {
       throw new Error(text || 'Unexpected response');
