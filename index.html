@@ -2,481 +2,521 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Urbaser Sumeet IEC</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d28;
-    --surface2: #22263a;
-    --border: #2e3348;
-    --accent: #4f8ef7;
-    --accent2: #38d9a9;
-    --danger: #ff6b6b;
-    --text: #e8ecf4;
-    --muted: #7b83a0;
-    --radius: 12px;
-    --font: 'Inter', sans-serif;
-    --mono: 'JetBrains Mono', monospace;
-  }
+:root {
+  --bg:       #f0f4f8;
+  --white:    #ffffff;
+  --border:   #dde3ed;
+  --accent:   #1a56db;
+  --accent-l: #e8f0fe;
+  --accent2:  #0e9f6e;
+  --accent2-l:#d5f5e3;
+  --danger:   #e02424;
+  --danger-l: #fde8e8;
+  --text:     #111928;
+  --text2:    #374151;
+  --muted:    #6b7280;
+  --radius:   14px;
+  --shadow:   0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+  --font:     'Inter', sans-serif;
+  --mono:     'JetBrains Mono', monospace;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 16px;
-  }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
 
-  header {
-    text-align: center;
-    padding: 24px 0 28px;
-  }
+/* ── Header ── */
+.app-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
 
-  header h1 {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    color: var(--text);
-  }
+.logo-img {
+  height: 42px;
+  width: auto;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
 
-  header p {
-    color: var(--muted);
-    font-size: 13px;
-    margin-top: 4px;
-  }
+.header-text h1 {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+}
 
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 99px;
-    padding: 4px 12px;
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 10px;
-  }
+.header-text p {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 1px;
+}
 
-  .pill .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--danger);
-  }
+.gps-badge {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--accent-l);
+  border-radius: 99px;
+  padding: 5px 11px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 
-  .pill .dot.active { background: var(--accent2); }
+.gps-badge .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--danger);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
 
-  /* Setup panel */
-  #setup-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 20px;
-  }
+.gps-badge .dot.active {
+  background: var(--accent2);
+  box-shadow: 0 0 0 2px var(--accent2-l);
+}
 
-  #setup-panel h2 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--accent);
-    margin-bottom: 0;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+/* ── Page body ── */
+.page-body {
+  padding: 14px 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
-  .setup-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+/* ── Info strip (timestamp + GPS) ── */
+.info-strip {
+  display: flex;
+  gap: 10px;
+}
 
-  .setup-field label {
-    display: block;
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+.info-box {
+  flex: 1;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
+}
 
-  .setup-field input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 9px 12px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 12px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+.info-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 5px;
+}
 
-  .setup-field input:focus { border-color: var(--accent); }
-  .setup-field input::placeholder { color: var(--muted); }
+.info-value {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+  line-height: 1.4;
+}
 
-  .btn-load {
-    width: 100%;
-    margin-top: 12px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 11px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
+#gps-coords-text { color: var(--accent2); font-size: 11px; }
 
-  .btn-load:hover { opacity: 0.85; }
-  .btn-load:disabled { opacity: 0.4; cursor: not-allowed; }
+/* ── Card ── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
 
-  /* Form */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 14px;
-  }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(to right, #f8faff, var(--white));
+}
 
-  .card-title {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
+.card-icon {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  background: var(--accent-l);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
 
-  .field { margin-bottom: 14px; }
-  .field:last-child { margin-bottom: 0; }
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
 
-  .field label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
+.card-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 1px;
+}
 
-  .field label span.req { color: var(--accent); }
+.card-body {
+  padding: 16px;
+}
 
-  .field select,
-  .field input,
-  .field textarea {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    color: var(--text);
-    font-family: var(--font);
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    appearance: none;
-  }
+/* ── Fields ── */
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
 
-  .field select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237b83a0' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 36px;
-  }
+.field label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
 
-  .field select:focus,
-  .field input:focus,
-  .field textarea:focus { border-color: var(--accent); }
+.field label .req { color: var(--danger); font-size: 15px; line-height: 1; }
 
-  .field select:disabled { opacity: 0.4; cursor: not-allowed; }
-  .field textarea { resize: vertical; min-height: 72px; }
+.field select,
+.field input[type='text'],
+.field textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
 
-  #ts-display {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--accent2);
-  }
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath fill='%236b7280' d='M7 9L0 0h14z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
 
-  .gps-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 13px;
-  }
+.field select:focus,
+.field input[type='text']:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+  background: var(--white);
+}
 
-  .gps-coords {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent2);
-  }
+.field select.filled {
+  border-color: var(--accent2);
+  background-color: var(--white);
+}
 
-  .camera-area {
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    background: var(--bg);
-    border: 2px dashed var(--border);
-    aspect-ratio: 4/3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.field select:disabled { opacity: 0.4; cursor: not-allowed; }
+.field textarea { resize: vertical; min-height: 84px; line-height: 1.5; }
 
-  #video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-    border-radius: 8px;
-  }
+/* 2-col grid for dropdowns */
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
 
-  #preview-canvas {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-    border-radius: 8px;
-  }
+/* ── Camera ── */
+.camera-wrap {
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1c1f2e;
+  aspect-ratio: 4/3;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #3a3f55;
+  margin-bottom: 12px;
+}
 
-  .camera-placeholder {
-    text-align: center;
-    color: var(--muted);
-  }
+#video { width:100%; height:100%; object-fit:cover; display:none; }
+#preview-canvas { width:100%; height:100%; object-fit:cover; display:none; }
 
-  .camera-placeholder .icon { font-size: 36px; margin-bottom: 8px; }
-  .camera-placeholder p { font-size: 13px; }
+.cam-placeholder {
+  text-align: center;
+  color: #7b83a0;
+  padding: 16px;
+}
 
-  .camera-controls {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
-  }
+.cam-placeholder .cam-icon { font-size: 44px; margin-bottom: 8px; }
+.cam-placeholder p { font-size: 13px; }
+.cam-placeholder small { font-size: 11px; opacity: 0.6; margin-top: 4px; display:block; }
 
-  .btn-cam {
-    flex: 1;
-    padding: 11px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: opacity 0.2s;
-  }
+.cam-controls {
+  display: flex;
+  gap: 10px;
+}
 
-  .btn-cam:hover { opacity: 0.85; }
-  .btn-cam:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-cam {
+  flex: 1;
+  padding: 13px 8px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s;
+  font-family: var(--font);
+}
 
-  .btn-start  { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-snap   { background: var(--accent); color: #fff; }
-  .btn-retake { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-cam:active { transform: scale(0.96); }
+.btn-cam:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-start  { background: var(--accent-l); color: var(--accent); border: 1.5px solid rgba(26,86,219,0.2); }
+.btn-snap   { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(26,86,219,0.3); }
+.btn-retake { background: var(--bg); color: var(--text2); border: 1.5px solid var(--border); }
 
-  .btn-submit {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, var(--accent), #6c5ce7);
-    border: none;
-    border-radius: var(--radius);
-    color: #fff;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: 0.3px;
-    transition: opacity 0.2s, transform 0.1s;
-    margin-top: 8px;
-  }
+/* ── Submit button ── */
+.btn-submit {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--accent), #3b5bdb);
+  border: none;
+  border-radius: 13px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: var(--font);
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 14px rgba(26,86,219,0.35);
+  transition: all 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
 
-  .btn-submit:hover  { opacity: 0.9; }
-  .btn-submit:active { transform: scale(0.98); }
-  .btn-submit:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-submit:active { transform: scale(0.98); }
+.btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  #toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
-    z-index: 1000;
-    transition: transform 0.3s ease;
-    white-space: nowrap;
-    max-width: calc(100vw - 32px);
-    text-align: center;
-  }
+/* ── Success banner ── */
+#success-banner {
+  display: none;
+  background: var(--accent2-l);
+  border: 1.5px solid var(--accent2);
+  border-radius: 13px;
+  padding: 18px 20px;
+  text-align: center;
+  animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
 
-  #toast.show    { transform: translateX(-50%) translateY(0); }
-  #toast.success { border-color: var(--accent2); color: var(--accent2); }
-  #toast.error   { border-color: var(--danger);  color: var(--danger); }
+@keyframes popIn {
+  from { opacity:0; transform:scale(0.9); }
+  to   { opacity:1; transform:scale(1); }
+}
 
-  .spinner {
-    display: inline-block;
-    width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    vertical-align: middle;
-    margin-right: 6px;
-  }
+#success-banner .check { font-size: 36px; margin-bottom: 8px; }
+#success-banner h3 { font-size: 17px; font-weight: 800; color: var(--accent2); margin-bottom: 4px; }
+#success-banner p  { font-size: 13px; color: #065f46; }
 
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── Toast ── */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--white);
+  border-radius: 12px;
+  padding: 13px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  z-index: 9999;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  border: 1.5px solid var(--border);
+}
 
-  .hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
+#toast.show    { transform: translateX(-50%) translateY(0); }
+#toast.success { border-color: var(--accent2); color: var(--accent2); background: var(--accent2-l); }
+#toast.error   { border-color: var(--danger);  color: var(--danger);  background: var(--danger-l); }
 
-  .setup-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-  }
+/* ── Spinner ── */
+.spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
 
-  .setup-toggle .arrow { transition: transform 0.2s; font-size: 12px; color: var(--muted); }
-  .setup-toggle.collapsed .arrow { transform: rotate(-90deg); }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Urbaser Sumeet IEC Data Collection </h1>
-  <p>GPS-tagged photo submissions</p>
-  <div class="pill">
+<!-- Header -->
+<div class="app-header">
+  <img src="data:image/png;base64,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" alt="Urbaser Sumeet" class="logo-img" />
+  <div class="header-text">
+    <h1>IEC Data Collection</h1>
+    <p>GPS-tagged photo submissions</p>
+  </div>
+  <div class="gps-badge">
     <span class="dot" id="gps-dot"></span>
-    <span id="gps-pill-text">Locating…</span>
-  </div>
-</header>
-
-<!-- Setup Panel -->
-<div id="setup-panel" style="display: none;">
-  <div class="setup-toggle" onclick="toggleSetup()">
-    <h2>⚙️ Google Integration Setup</h2>
-    <span class="arrow" id="setup-arrow">▼</span>
-  </div>
-  <div id="setup-body" >
-    <p style="font-size:12px;color:var(--muted);margin:10px 0 14px;">Paste your Apps Script Web App URL. Only the URL is needed — no Sheet ID required.</p>
-    <div class="setup-grid">
-      <div class="setup-field">
-        <label>Apps Script Web App URL</label>
-        <input type="url" id="script-url" placeholder="https://script.google.com/macros/s/…/exec" />
-      </div>
-    </div>
-    <button class="btn-load" onclick="loadDropdowns()" id="load-btn">Load Dropdowns from Sheet</button>
-    <p class="hint" style="margin-top:8px;">💡 Settings are saved in your browser.</p>
+    <span id="gps-pill-text">GPS…</span>
   </div>
 </div>
 
-<!-- Main Form -->
 <form id="capture-form" onsubmit="handleSubmit(event)">
+<div class="page-body">
 
   <!-- Timestamp + GPS -->
-  <div class="card">
-    <div class="card-title">Capture Details</div>
-    <div class="field">
-      <label>Timestamp</label>
-      <div id="ts-display">—</div>
+  <div class="info-strip">
+    <div class="info-box">
+      <div class="info-label">🕐 Timestamp</div>
+      <div class="info-value" id="ts-display">—</div>
     </div>
-    <div class="field">
-      <label>GPS Location</label>
-      <div class="gps-status">
-        <span style="font-size:16px;">🛰</span>
-        <span id="gps-text" style="color:var(--muted);font-size:13px;">Acquiring location…</span>
-      </div>
+    <div class="info-box">
+      <div class="info-label">📍 GPS</div>
+      <div class="info-value" id="gps-coords-text">Locating…</div>
     </div>
   </div>
 
-  <!-- Dependent Dropdowns -->
+  <!-- Zone / Ward / Route / Type -->
   <div class="card">
-    <div class="card-title">Zone / Ward / Route</div>
-
-    <div class="field">
-      <label>Zone <span class="req">*</span></label>
-      <select id="zone-select" required onchange="onZoneChange()">
-        <option value="">— Select Zone —</option>
-      </select>
+    <div class="card-header">
+      <div class="card-icon">🗺️</div>
+      <div>
+        <div class="card-title">Area Details</div>
+        <div class="card-sub">Select zone, ward, route and type</div>
+      </div>
     </div>
-
-    <div class="field">
-      <label>Ward <span class="req">*</span></label>
-      <select id="ward-select" required disabled onchange="onWardChange()">
-        <option value="">— Select Ward —</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>Route <span class="req">*</span></label>
-      <select id="route-select" required disabled>
-        <option value="">— Select Route —</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>Type <span class="req">*</span></label>
-      <select id="type-select" required>
-        <option value="">— Select Type —</option>
-        <option>Seggregated</option>
-        <option>No Seggregation</option>
-       
-      </select>
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field">
+          <label>Zone <span class="req">*</span></label>
+          <select id="zone-select" required onchange="onZoneChange()">
+            <option value="">— Zone —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Ward <span class="req">*</span></label>
+          <select id="ward-select" required disabled onchange="onWardChange()">
+            <option value="">— Ward —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Route <span class="req">*</span></label>
+          <select id="route-select" required disabled>
+            <option value="">— Route —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Door No</label>
+          <input type="text" id="type-select" placeholder="Enter Door No" />
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Photo -->
   <div class="card">
-    <div class="card-title">Photo Capture</div>
-    <div class="camera-area" id="camera-area">
-      <div class="camera-placeholder" id="cam-placeholder">
-        <div class="icon">📷</div>
-        <p>Tap "Open Camera" to start</p>
+    <div class="card-header">
+      <div class="card-icon">📷</div>
+      <div>
+        <div class="card-title">Photo Capture</div>
+        <div class="card-sub">GPS + timestamp watermark added automatically</div>
       </div>
-      <video id="video" autoplay playsinline></video>
-      <canvas id="preview-canvas"></canvas>
     </div>
-    <div class="camera-controls">
-      <button type="button" class="btn-cam btn-start"  id="btn-start"  onclick="startCamera()">📷 Open Camera</button>
-      <button type="button" class="btn-cam btn-snap"   id="btn-snap"   onclick="snapPhoto()" disabled>⚡ Capture</button>
-      <button type="button" class="btn-cam btn-retake" id="btn-retake" onclick="retakePhoto()" style="display:none">↩ Retake</button>
+    <div class="card-body">
+      <div class="camera-wrap">
+        <div class="cam-placeholder" id="cam-placeholder">
+          <div class="cam-icon">📸</div>
+          <p>Tap <strong>Open Camera</strong> to begin</p>
+          <small>Watermark with GPS &amp; time will be burned in</small>
+        </div>
+        <video id="video" autoplay playsinline></video>
+        <canvas id="preview-canvas"></canvas>
+      </div>
+      <div class="cam-controls">
+        <button type="button" class="btn-cam btn-start" id="btn-start" onclick="startCamera()">📷 Open Camera</button>
+        <button type="button" class="btn-cam btn-snap"  id="btn-snap"  onclick="snapPhoto()" disabled>⚡ Capture</button>
+        <button type="button" class="btn-cam btn-retake" id="btn-retake" onclick="retakePhoto()" style="display:none">↩ Retake</button>
+      </div>
+      <canvas id="watermark-canvas" style="display:none"></canvas>
     </div>
-    <canvas id="watermark-canvas" style="display:none"></canvas>
   </div>
 
   <!-- Remarks -->
   <div class="card">
-    <div class="card-title">Additional Info</div>
-    <div class="field">
-      <label>Remarks</label>
-      <textarea id="remarks" placeholder="Enter any remarks or observations…"></textarea>
+    <div class="card-header">
+      <div class="card-icon">📝</div>
+      <div>
+        <div class="card-title">Remarks</div>
+        <div class="card-sub">Optional observations</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <textarea id="remarks" placeholder="Enter any remarks or observations…"></textarea>
+      </div>
     </div>
   </div>
 
-  <button type="submit" class="btn-submit" id="submit-btn">Submit Entry</button>
+  <!-- Success banner (hidden until submit) -->
+  <div id="success-banner">
+    <div class="check">✅</div>
+    <h3>Submitted Successfully!</h3>
+    <p>Saved to Google Drive &amp; Sheet</p>
+  </div>
+
+  <!-- Submit -->
+  <button type="submit" class="btn-submit" id="submit-btn">
+    🚀 Submit Entry
+  </button>
+
+</div>
 </form>
 
 <div id="toast"></div>
 
 <script>
+
+
 // ─── Constants ───────────────────────────────────────────
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuPBToot8XEssger232JF5tDPKSK9hP3M3ygWU9U86qkmS_XRJdPOyQU7EhiLWQxY3MQ/exec';
 
@@ -488,13 +528,9 @@ let videoStream = null;
 
 // ─── Init ─────────────────────────────────────────────────
 window.addEventListener('load', () => {
-  const savedUrl = localStorage.getItem('scriptUrl') || SCRIPT_URL;
-  document.getElementById('script-url').value = savedUrl;
-
   startTimestamp();
   acquireGPS();
   loadDropdowns();
-  toggleSetup(); // collapse on load
 });
 
 // ─── Timestamp ────────────────────────────────────────────
@@ -522,42 +558,20 @@ function acquireGPS() {
     gpsData.lng      = pos.coords.longitude.toFixed(6);
     gpsData.accuracy = Math.round(pos.coords.accuracy);
     document.getElementById('gps-dot').classList.add('active');
-    document.getElementById('gps-text').innerHTML =
-      `<span class="gps-coords">${gpsData.lat}, ${gpsData.lng}</span>` +
-      ` <span style="color:var(--muted);font-size:11px;">± ${gpsData.accuracy}m</span>`;
-    document.getElementById('gps-pill-text').textContent = 'GPS Active';
+    document.getElementById('gps-coords-text').textContent = `${gpsData.lat}, ${gpsData.lng}`;
+    document.getElementById('gps-pill-text').textContent = 'GPS ✓';
   }, () => {
-    document.getElementById('gps-text').textContent = 'Location denied — watermark will show GPS N/A';
+    document.getElementById('gps-coords-text').textContent = 'GPS denied';
     document.getElementById('gps-pill-text').textContent = 'No GPS';
     gpsData.lat = 'N/A';
     gpsData.lng = 'N/A';
   }, { enableHighAccuracy: true, maximumAge: 5000 });
 }
 
-// ─── Setup toggle ─────────────────────────────────────────
-function toggleSetup() {
-  const body   = document.getElementById('setup-body');
-  const toggle = document.querySelector('.setup-toggle');
-  if (body.style.display === 'none') {
-    body.style.display = '';
-    toggle.classList.remove('collapsed');
-  } else {
-    body.style.display = 'none';
-    toggle.classList.add('collapsed');
-  }
-}
-
 // ─── Load Dropdowns ───────────────────────────────────────
 // Your Apps Script: GET ?action=routes → [{Zone, Ward, Route}, ...]
 async function loadDropdowns() {
-  const url = document.getElementById('script-url').value.trim();
-  if (!url) { showToast('Please enter the Script URL', 'error'); return; }
-
-  localStorage.setItem('scriptUrl', url);
-
-  const btn = document.getElementById('load-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Loading…';
+  const url = SCRIPT_URL;
 
   try {
     const res  = await fetch(`${url}?action=routes`);
@@ -581,13 +595,12 @@ async function loadDropdowns() {
     });
 
     populateZones(dropdownData.zones);
-    showToast(`✓ Loaded ${rows.length} records`, 'success');
-    btn.innerHTML = '✓ Loaded';
+    showToast(`✓ ${rows.length} routes loaded`, 'success');
   } catch (err) {
-    showToast('Failed to load — check Script URL', 'error');
-    btn.disabled = false;
-    btn.innerHTML = 'Retry Load';
+    showToast('Failed to load dropdowns — retrying…', 'error');
     console.error(err);
+    // Auto-retry once after 3s
+    setTimeout(loadDropdowns, 3000);
   }
 }
 
@@ -600,6 +613,8 @@ function populateZones(zones) {
 }
 
 function onZoneChange() {
+  const el = document.getElementById('zone-select');
+  el.classList.toggle('filled', !!el.value);
   const zone     = document.getElementById('zone-select').value;
   const wardSel  = document.getElementById('ward-select');
   const routeSel = document.getElementById('route-select');
@@ -618,6 +633,8 @@ function onZoneChange() {
 }
 
 function onWardChange() {
+  const el = document.getElementById('ward-select');
+  el.classList.toggle('filled', !!el.value);
   const zone     = document.getElementById('zone-select').value;
   const ward     = document.getElementById('ward-select').value;
   const routeSel = document.getElementById('route-select');
@@ -673,15 +690,19 @@ function latLngToPixel(lat, lng, zoom, tileX, tileY, tileSize) {
   return { px, py };
 }
 
-function loadTile(url) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload  = () => resolve(img);
-    img.onerror = () => resolve(null);
-    // Try multiple OSM tile servers to avoid rate-limiting
-    img.src = url;
-  });
+// Fetch a tile via fetch() API (handles CORS better than <img> crossOrigin)
+// and convert to ImageBitmap for drawing on canvas
+function loadTile(z, x, y) {
+  // Rotate across a/b/c subdomains
+  const srv = ['a','b','c'][(x + y) % 3];
+  const url = `https://${srv}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+  return fetch(url)
+    .then(r => {
+      if (!r.ok) return null;
+      return r.blob();
+    })
+    .then(blob => blob ? createImageBitmap(blob) : null)
+    .catch(() => null);
 }
 
 // Renders a 3×3 grid of OSM tiles centred on lat/lng into an offscreen canvas
@@ -691,8 +712,7 @@ async function loadMapImage(lat, lng) {
 
   const zoom     = 15;
   const tileSize = 256;
-  const grid     = 3; // 3×3 tiles → 768×768 before crop
-  const servers  = ['a','b','c'];
+  const grid     = 3;
 
   const centre = latLngToTile(parseFloat(lat), parseFloat(lng), zoom);
 
@@ -700,10 +720,7 @@ async function loadMapImage(lat, lng) {
   const promises = [];
   for (let dy = -1; dy <= 1; dy++) {
     for (let dx = -1; dx <= 1; dx++) {
-      const tx  = centre.x + dx;
-      const ty  = centre.y + dy;
-      const srv = servers[Math.abs(dx + dy * 3) % 3];
-      promises.push(loadTile(`https://${srv}.tile.openstreetmap.org/${zoom}/${tx}/${ty}.png`));
+      promises.push(loadTile(zoom, centre.x + dx, centre.y + dy));
     }
   }
 
@@ -711,9 +728,7 @@ async function loadMapImage(lat, lng) {
   if (tiles.every(t => t === null)) return null;
 
   // Stitch tiles onto offscreen canvas
-  const full = document.createElement('canvas');
-  full.width  = tileSize * grid;
-  full.height = tileSize * grid;
+  const full = new OffscreenCanvas(tileSize * grid, tileSize * grid);
   const fCtx = full.getContext('2d');
 
   tiles.forEach((tile, i) => {
@@ -731,17 +746,17 @@ async function loadMapImage(lat, lng) {
     topLeftTileX, topLeftTileY, tileSize
   );
 
-  // Crop a square centred on the pin
-  const cropSize = tileSize * 2; // 512×512 crop
-  const cropX = Math.round(px - cropSize / 2);
-  const cropY = Math.round(py - cropSize / 2);
+  // Crop a 512×512 square centred on the pin
+  const cropSize = tileSize * 2;
+  const cropX = Math.round(Math.max(0, px - cropSize / 2));
+  const cropY = Math.round(Math.max(0, py - cropSize / 2));
 
+  // Convert OffscreenCanvas to regular canvas for drawImage compatibility
   const cropped = document.createElement('canvas');
   cropped.width  = cropSize;
   cropped.height = cropSize;
   cropped.getContext('2d').drawImage(full, cropX, cropY, cropSize, cropSize, 0, 0, cropSize, cropSize);
 
-  // Pin is now at centre of cropped canvas
   return { canvas: cropped, pinX: cropSize / 2, pinY: cropSize / 2 };
 }
 
@@ -937,7 +952,7 @@ async function handleSubmit(e) {
     const text = await res.text();
 
     if (text.trim() === 'OK') {
-      showToast('✓ Saved to Google Drive & Sheet!', 'success');
+      showSuccessBanner();
       resetForm();
     } else {
       throw new Error(text || 'Unexpected response');
@@ -957,9 +972,61 @@ function resetForm() {
   document.getElementById('ward-select').disabled   = true;
   document.getElementById('route-select').innerHTML = '<option value="">— Select Route —</option>';
   document.getElementById('route-select').disabled  = true;
-  document.getElementById('type-select').value      = '';
+  document.getElementById('type-select').value = '';
   document.getElementById('remarks').value          = '';
   retakePhoto();
+}
+
+
+function validateStep2() {
+  const zone  = document.getElementById('zone-select').value;
+  const ward  = document.getElementById('ward-select').value;
+  const route = document.getElementById('route-select').value;
+  const type  = document.getElementById('type-select').value;
+  if (!zone || !ward || !route || !type) {
+    showToast('Please fill in all fields', 'error');
+    return;
+  }
+  goStep(3);
+}
+
+function validateStep3() {
+  if (!photoDataUrl) {
+    showToast('Please capture a photo first', 'error');
+    return;
+  }
+  goStep(4);
+}
+
+function buildSummary() {
+  const zone   = document.getElementById('zone-select').value;
+  const ward   = document.getElementById('ward-select').value;
+  const route  = document.getElementById('route-select').value;
+  const type   = document.getElementById('type-select').value;
+  const ts     = document.getElementById('ts-display').textContent;
+  const gps    = document.getElementById('gps-coords-text').textContent;
+
+  document.getElementById('summary-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;">
+      <span style="color:var(--muted);">🕐 Time</span>      <strong>${ts}</strong>
+      <span style="color:var(--muted);">📍 GPS</span>       <strong style="font-family:var(--mono);font-size:12px;">${gps}</strong>
+      <span style="color:var(--muted);">🗺 Zone</span>      <strong>${zone}</strong>
+      <span style="color:var(--muted);">🏘 Ward</span>      <strong>${ward}</strong>
+      <span style="color:var(--muted);">🛣 Route</span>     <strong>${route}</strong>
+      <span style="color:var(--muted);">🏷 Type</span>      <strong>${type}</strong>
+      <span style="color:var(--muted);">📷 Photo</span>     <strong style="color:var(--accent2);">✓ Captured</strong>
+    </div>
+  `;
+}
+
+function startNewEntry() {
+  document.getElementById('success-screen').style.display = 'none';
+  document.getElementById('capture-form').style.display   = 'block';
+  document.querySelectorAll('.steps-bar, .section-panel').forEach(el => {
+    if (el.classList.contains('steps-bar')) el.style.display = 'flex';
+  });
+  goStep(1);
+  resetForm();
 }
 
 // ─── Toast ───────────────────────────────────────────────
@@ -968,6 +1035,16 @@ function showToast(msg, type = '') {
   t.textContent = msg;
   t.className = 'show ' + type;
   setTimeout(() => t.className = '', 3200);
+}
+
+
+
+// ─── Success banner ───────────────────────────────────────
+function showSuccessBanner() {
+  const banner = document.getElementById('success-banner');
+  banner.style.display = 'block';
+  banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => { banner.style.display = 'none'; }, 4000);
 }
 </script>
 </body>
