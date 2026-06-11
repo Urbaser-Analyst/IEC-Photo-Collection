@@ -99,6 +99,16 @@ body {
   box-shadow: 0 0 0 2px var(--accent2-l);
 }
 
+.gps-badge.gps-ok {
+  background: var(--accent2-l);
+  color: var(--accent2);
+}
+
+.gps-badge.gps-fail {
+  background: var(--danger-l);
+  color: var(--danger);
+}
+
 /* ── Page body ── */
 .page-body {
   padding: 14px 14px 0;
@@ -395,7 +405,7 @@ body {
     <h1>IEC Data Collection</h1>
     <p>GPS-tagged photo submissions</p>
   </div>
-  <div class="gps-badge">
+  <div class="gps-badge" id="gps-badge">
     <span class="dot" id="gps-dot"></span>
     <span id="gps-pill-text">GPS…</span>
   </div>
@@ -501,7 +511,7 @@ body {
   <div id="success-banner">
     <div class="check">✅</div>
     <h3>Submitted Successfully!</h3>
-    <p>Saved to Google Drive &amp; Sheet</p>
+    <p>Saved!</p>
   </div>
 
   <!-- Submit -->
@@ -522,6 +532,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuPBToot8XEssger232
 
 // ─── State ───────────────────────────────────────────────
 let gpsData = { lat: null, lng: null, accuracy: null };
+let gpsAddress = '';
 let photoDataUrl = null;
 let dropdownData = null;
 let videoStream = null;
@@ -551,6 +562,7 @@ function acquireGPS() {
   if (!navigator.geolocation) {
     document.getElementById('gps-text').textContent = 'GPS not available';
     document.getElementById('gps-pill-text').textContent = 'No GPS';
+    document.getElementById('gps-badge').classList.add('gps-fail');
     return;
   }
   navigator.geolocation.watchPosition(pos => {
@@ -560,12 +572,45 @@ function acquireGPS() {
     document.getElementById('gps-dot').classList.add('active');
     document.getElementById('gps-coords-text').textContent = `${gpsData.lat}, ${gpsData.lng}`;
     document.getElementById('gps-pill-text').textContent = 'GPS ✓';
+    document.getElementById('gps-badge').classList.add('gps-ok');
+    reverseGeocode(gpsData.lat, gpsData.lng);
   }, () => {
-    document.getElementById('gps-coords-text').textContent = 'GPS denied';
+    document.getElementById('gps-coords-text').textContent = '⚠️ Location access denied';
     document.getElementById('gps-pill-text').textContent = 'No GPS';
-    gpsData.lat = 'N/A';
-    gpsData.lng = 'N/A';
+    document.getElementById('gps-badge').classList.add('gps-fail');
+    document.getElementById('gps-dot').style.background = 'var(--danger)';
+    gpsData.lat = null;
+    gpsData.lng = null;
   }, { enableHighAccuracy: true, maximumAge: 5000 });
+}
+
+// ─── Reverse Geocode ─────────────────────────────────────
+async function reverseGeocode(lat, lng) {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+      { headers: { 'Accept-Language': 'en' } }
+    );
+    const data = await res.json();
+    if (data && data.display_name) {
+      // Build short address: road, suburb, city, state
+      const a = data.address || {};
+      const parts = [
+        a.house_number ? `${a.house_number}, ${a.road || ''}` : (a.road || a.pedestrian || a.footway || ''),
+        a.suburb || a.neighbourhood || a.village || '',
+        a.city || a.town || a.county || '',
+        a.state || '',
+        a.country || ''
+      ].filter(Boolean);
+      gpsAddress = parts.join(', ');
+
+      // Also show lat/lng + address in info box
+      document.getElementById('gps-coords-text').innerHTML =
+        `${lat}, ${lng}<br><span style="font-size:10px;color:var(--muted);font-family:var(--font);">${gpsAddress.substring(0, 60)}${gpsAddress.length > 60 ? '…' : ''}</span>`;
+    }
+  } catch(e) {
+    console.warn('Reverse geocode failed', e);
+  }
 }
 
 // ─── Load Dropdowns ───────────────────────────────────────
@@ -808,6 +853,20 @@ function drawWatermark(ctx, w, h, mapImg) {
 
   // ── Right-side text watermark ──────────────────────────
   const lines = [ts, `${latStr}  ${lngStr}`.trim()];
+  if (gpsAddress) {
+    // Split address into max 35-char lines
+    const words = gpsAddress.split(', ');
+    let line = '';
+    for (const word of words) {
+      if ((line + word).length > 35) {
+        if (line) lines.push(line.replace(/,\s*$/, ''));
+        line = word + ', ';
+      } else {
+        line += word + ', ';
+      }
+    }
+    if (line) lines.push(line.replace(/,\s*$/, ''));
+  }
   if (zone) lines.push(`Zone ${zone}  Ward ${ward}  Route ${route}`);
 
   const fontSize = Math.max(14, Math.round(w * 0.022));
@@ -930,6 +989,10 @@ function retakePhoto() {
 async function handleSubmit(e) {
   e.preventDefault();
 
+  if (!gpsData.lat || gpsData.lat === 'N/A') {
+    showToast('⚠️ GPS not acquired. Please wait for location fix.', 'error');
+    return;
+  }
   if (!photoDataUrl) { showToast('Please capture a photo first', 'error'); return; }
 
   const url = localStorage.getItem('scriptUrl') || SCRIPT_URL;
