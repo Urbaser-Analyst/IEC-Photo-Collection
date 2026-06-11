@@ -655,7 +655,33 @@ async function startCamera() {
   }
 }
 
-function snapPhoto() {
+// ─── Fetch OSM map tile as Image ─────────────────────────
+function loadMapImage(lat, lng) {
+  return new Promise((resolve) => {
+    if (!lat || lat === 'N/A') { resolve(null); return; }
+
+    // Use staticmap.net — open-source OSM-based static maps, no key needed
+    const zoom   = 15;
+    const size   = 200; // px square
+    const mapUrl = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=${zoom}&size=${size}x${size}&markers=${lat},${lng},ol-marker`;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload  = () => resolve(img);
+    img.onerror = () => {
+      // Fallback: try tiles.stadiamaps proxy
+      const fb = new Image();
+      fb.crossOrigin = 'anonymous';
+      fb.onload  = () => resolve(fb);
+      fb.onerror = () => resolve(null);
+      fb.src = `https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=${size}&height=${size}&center=lonlat:${lng},${lat}&zoom=${zoom}&marker=lonlat:${lng},${lat};color:%23ff0000;size:medium&apiKey=no_key_placeholder`;
+      resolve(null); // don't wait for fallback, just skip map
+    };
+    img.src = mapUrl;
+  });
+}
+
+async function snapPhoto() {
   const video   = document.getElementById('video');
   const wCanvas = document.getElementById('watermark-canvas');
   const preview = document.getElementById('preview-canvas');
@@ -664,7 +690,17 @@ function snapPhoto() {
   wCanvas.height = video.videoHeight || 960;
   const ctx = wCanvas.getContext('2d');
   ctx.drawImage(video, 0, 0, wCanvas.width, wCanvas.height);
-  drawWatermark(ctx, wCanvas.width, wCanvas.height);
+
+  // Stop stream early so UI feels snappy
+  if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
+
+  document.getElementById('btn-snap').disabled        = true;
+  document.getElementById('btn-snap').innerHTML       = '<span class="spinner"></span> Processing…';
+
+  // Fetch map tile (with GPS pin) from OSM
+  const mapImg = await loadMapImage(gpsData.lat, gpsData.lng);
+
+  drawWatermark(ctx, wCanvas.width, wCanvas.height, mapImg);
 
   preview.width  = wCanvas.width;
   preview.height = wCanvas.height;
@@ -672,15 +708,13 @@ function snapPhoto() {
   preview.style.display = 'block';
   video.style.display   = 'none';
 
-  if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
-
-  document.getElementById('btn-snap').disabled          = true;
-  document.getElementById('btn-retake').style.display   = 'flex';
+  document.getElementById('btn-snap').innerHTML       = '⚡ Capture';
+  document.getElementById('btn-retake').style.display = 'flex';
 
   photoDataUrl = wCanvas.toDataURL('image/jpeg', 0.88);
 }
 
-function drawWatermark(ctx, w, h) {
+function drawWatermark(ctx, w, h, mapImg) {
   const now  = new Date();
   const ts   = now.toLocaleString('en-IN', {
     day: '2-digit', month: 'short', year: 'numeric',
@@ -693,6 +727,7 @@ function drawWatermark(ctx, w, h) {
   const ward  = document.getElementById('ward-select').value;
   const route = document.getElementById('route-select').value;
 
+  // ── Right-side text watermark ──────────────────────────
   const lines = [ts, `${latStr}  ${lngStr}`.trim()];
   if (zone) lines.push(`Zone ${zone}  Ward ${ward}  Route ${route}`);
 
@@ -704,18 +739,95 @@ function drawWatermark(ctx, w, h) {
   const blockH = lines.length * lineH + pad * 2;
   const maxW   = Math.max(...lines.map(l => ctx.measureText(l).width));
   const boxW   = maxW + pad * 2;
-  const x = w - boxW - 10;
-  const y = h - blockH - 10;
+  const tx = w - boxW - 10;
+  const ty = h - blockH - 10;
 
-  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillStyle = 'rgba(0,0,0,0.62)';
   ctx.beginPath();
-  ctx.roundRect(x, y, boxW, blockH, 6);
+  ctx.roundRect(tx, ty, boxW, blockH, 6);
   ctx.fill();
 
   ctx.fillStyle = '#38d9a9';
   lines.forEach((line, i) => {
-    ctx.fillText(line, x + pad, y + pad + fontSize + i * lineH);
+    ctx.fillText(line, tx + pad, ty + pad + fontSize + i * lineH);
   });
+
+  // ── Bottom-left mini-map with pin ─────────────────────
+  if (mapImg) {
+    const mapSize   = Math.round(Math.min(w, h) * 0.22); // ~22% of shorter side
+    const mapMargin = 10;
+    const mx = mapMargin;
+    const my = h - mapSize - mapMargin;
+    const radius = 8;
+
+    // White border frame
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.beginPath();
+    ctx.roundRect(mx - 3, my - 3, mapSize + 6, mapSize + 6, radius + 2);
+    ctx.fill();
+
+    // Clip to rounded rect and draw map
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(mx, my, mapSize, mapSize, radius);
+    ctx.clip();
+    ctx.drawImage(mapImg, mx, my, mapSize, mapSize);
+    ctx.restore();
+
+    // Draw red pin marker on top at center
+    const pinX = mx + mapSize / 2;
+    const pinY = my + mapSize / 2;
+    const pinR = Math.max(6, mapSize * 0.07);
+
+    // Pin shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(pinX + 2, pinY + pinR * 1.6 + 2, pinR * 0.7, pinR * 0.3, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pin circle
+    ctx.fillStyle = '#e63946';
+    ctx.beginPath();
+    ctx.arc(pinX, pinY, pinR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pin inner dot
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(pinX, pinY, pinR * 0.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pin tail (teardrop point downward)
+    ctx.fillStyle = '#e63946';
+    ctx.beginPath();
+    ctx.moveTo(pinX - pinR * 0.5, pinY + pinR * 0.7);
+    ctx.lineTo(pinX + pinR * 0.5, pinY + pinR * 0.7);
+    ctx.lineTo(pinX, pinY + pinR * 1.8);
+    ctx.closePath();
+    ctx.fill();
+
+    // "Maps" label below mini-map
+    const labelFontSize = Math.max(10, Math.round(mapSize * 0.09));
+    ctx.font = `bold ${labelFontSize}px 'Inter', sans-serif`;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.textAlign = 'center';
+    ctx.fillText('OpenStreetMap', mx + mapSize / 2, my + mapSize + 14);
+    ctx.textAlign = 'left'; // reset
+  } else if (gpsData.lat && gpsData.lat !== 'N/A') {
+    // Map failed to load — draw a placeholder box
+    const mapSize   = Math.round(Math.min(w, h) * 0.22);
+    const mapMargin = 10;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.beginPath();
+    ctx.roundRect(mapMargin, h - mapSize - mapMargin, mapSize, mapSize, 8);
+    ctx.fill();
+    ctx.fillStyle = '#7b83a0';
+    ctx.font = `bold ${Math.round(mapSize * 0.13)}px 'Inter', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('📍 Map', mapMargin + mapSize / 2, h - mapSize / 2 - mapMargin);
+    ctx.fillText('unavailable', mapMargin + mapSize / 2, h - mapSize / 2 - mapMargin + Math.round(mapSize * 0.16));
+    ctx.textAlign = 'left';
+  }
 }
 
 function retakePhoto() {
