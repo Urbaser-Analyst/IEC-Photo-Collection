@@ -598,7 +598,7 @@ async function reverseGeocode(lat, lng) {
       const parts = [
         a.house_number ? `${a.house_number}, ${a.road || ''}` : (a.road || a.pedestrian || a.footway || ''),
         a.suburb || a.neighbourhood || a.village || '',
-        a.city || a.town || '',
+        a.city || a.town || a.county || '',
         a.state || '',
         a.country || ''
       ].filter(Boolean);
