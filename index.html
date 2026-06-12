@@ -593,12 +593,12 @@ async function reverseGeocode(lat, lng) {
     );
     const data = await res.json();
     if (data && data.display_name) {
-      // Build short address: road, city, state
+      // Build short address: road, suburb, city, state
       const a = data.address || {};
       const parts = [
         a.house_number ? `${a.house_number}, ${a.road || ''}` : (a.road || a.pedestrian || a.footway || ''),
         a.suburb || a.neighbourhood || a.village || '',
-        a.city || a.town || a.county || '',
+        a.city || a.town || '',
         a.state || '',
         a.country || ''
       ].filter(Boolean);
